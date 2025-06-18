@@ -5,7 +5,7 @@ set -euo pipefail
 # DB_HOST: Utilise 127.0.0.1 pour forcer la connexion TCP/IP et éviter les problèmes de socket UNIX.
 : "${DB_HOST:=127.0.0.1}"
 : "${DB_PORT:=5432}"
-# DB_USER: Confirmé — l'utilisateur par défaut est 'pro' (voir votre capture d'écran ServerPro).
+# DB_USER: Basé sur votre capture d'écran ServerPro, l'utilisateur par défaut pour komkom_db est 'pro'.
 : "${DB_USER:=pro}"
 # DB_PASSWORD: Basé sur votre contexte précédent.
 : "${DB_PASSWORD:=Fallou96}"
