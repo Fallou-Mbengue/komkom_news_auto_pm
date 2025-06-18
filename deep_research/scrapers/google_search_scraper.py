@@ -6,6 +6,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 
+import sys
+sys.path.append('/app/scraper')  # Ensures komkom_scraper package is resolvable when script is executed via mounted volume.
+
 from komkom_scraper.pipelines import PostgresUpsertPipeline
 
 SEARCH_QUERIES = ["opportunité entrepreneuriale Sénégal"]
