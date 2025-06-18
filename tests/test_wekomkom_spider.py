@@ -7,7 +7,7 @@ Assumptions:
 
 import pytest
 from scrapy.http import HtmlResponse, Request
-from deep_research.spiders.wekomkom_spider import WekomkomSpider
+from komkom_scraper.spiders.wekomkom_spider import WekomkomSpider
 
 @pytest.fixture
 def list_html():

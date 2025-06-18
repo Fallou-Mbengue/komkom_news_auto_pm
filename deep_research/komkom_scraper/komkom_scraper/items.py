@@ -1,0 +1,1 @@
+from deep_research.items import OpportunityItem as OpportunityItem
