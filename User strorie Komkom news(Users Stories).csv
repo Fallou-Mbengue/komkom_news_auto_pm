@@ -1,0 +1,231 @@
+USER STORIES Komkom News;;;;;;;;;;;
+ID;User Story;Description;Critères d'Acceptation Détaillés;;;;;;;;
+US001;"Connexion via Wekomkom
+En tant qu'entrepreneur inscrit sur Wekomkom
+Je veux me connecter avec mes identifiants Wekomkom
+Afin d'accéder directement sans créer nouveau compte.";"Priorité : ?? Must Have
+Effort : 5 points
+Sprint : 1
+Thème : Authentification";"- Bouton ""Se connecter avec Wekomkom"" visible sur page d'accueil.
+- Clic redirige vers interface OAuth2 Wekomkom
+- Redirection vers Komkom News après authentification réussie.
+-Import automatique des informations de profil Wekomkom.
+- Message d'erreur clair en cas d'échec d'authentification
+- LSession reste active pendant 7 jours sans réauthentification";;;;;;;;
+US002;"Configuration Préférences
+En tant que nouvel utilisateur de Komkom News
+Je veux configurer mes préférences lors de ma première connexion
+Afin de recevoir un contenu adapté à mon profil.";"Priorité : ?? Must Have
+Effort : 8 points
+Sprint : 1
+Thème : Onboarding";"- Wizard d'onboarding s'affiche automatiquement pour les nouveaux utilisateurs.
+- Sélection du secteur d'activité (liste prédéfinie + ""Autre"").
+- Choix de langue préférée (Français, Wolof, Les deux).
+- Indication du stade de développement (Idée, Prototype, Lancement, Croissance, Expansion).
+- Sélection des types d'opportunités d'intérêt (Financement, Formation,Networking, Subventions, Marchés)
+-Bouton ""Ignorer pour l'instant"" permet de configurer plus tard.
+- Préférences sauvegardées et utilisées pour personnalisation.
+- JRécapitulatif des choix affiché avant validation finale";;;;;;;;
+US003;"Génération Journal Hebdomadaire
+En tant qu'entrepreneur abonné
+Je veux recevoir automatiquement un journal personnalisé chaque semaine
+Afin de découvrir les opportunités les plus pertinentes.";"Priorité : ?? Must Have
+Effort : 13 points
+Sprint : 2
+Thème : Journal Personnalisé";"- Nouveau journal généré chaque lundi matin à 6h00 GMT
+- Contenu personnalisé selon le profil et les préférences utilisateur
+-Journal contient 5-7 opportunités maximum par édition
+- Chaque opportunité inclut : titre, description, deadline, critères d'éligibilité
+- Journal disponible en version audio (podcast) et texte
+- Durée audio comprise entre 15-20 minutes 
+-H6Notification push de disponibilité envoyée
+- Journal accessible même sans connexion internet (mode offline)";;;;;;;;
+US004;"Lecteur Podcast Intégré
+En tant qu'utilisateur mobile
+Je veux écouter mon journal via un lecteur audio intégré et optimisé
+Afin de consommer le contenu en mobilité";"Priorité : ?? Must Have
+Effort : 8 points
+Sprint : 2
+Thème : Podcast";"- Lecteur audio s'affiche en bas de l'écran (sticky player)
+- Contrôles disponibles : Play/Pause, Précédent, Suivant, Timeline
+- Vitesse de lecture ajustable (0.5x, 0.75x, 1x, 1.25x, 1.5x, 2x)
+- Fonction avance/recul rapide (15 secondes) 
+- Affichage du temps écoulé et durée totale 
+- Lecture continue même avec l'écran verrouillé
+- Contrôles via notifications système (Android/iOS)
+- Sauvegarde automatique de la position de lecture
+- Fonction ""Marquer comme écouté"" automatique à 90% de lecture";;;;;;;;
+US005;"Transcription et Accessibilité
+En tant qu'utilisateur malentendant ou préférant lire
+Je veux accéder à la transcription complète du podcast
+Afin de consommer le contenu sous format texte";"Priorité : ?? Should Have
+Effort : 5 points
+Sprint : 7
+Thème : Accessibilité";"- Bouton ""Transcription"" visible dans le lecteur
+- Transcription complète et synchronisée avec l'audio
+- Possibilité de cliquer sur un passage pour naviguer dans l'audio
+- Mise en évidence du texte en cours de lecture
+- Option de téléchargement PDF de la transcription
+- Fonction recherche dans la transcription
+- Compatibilité avec les lecteurs d'écran (WCAG 2.1 AA)
+- Taille de police ajustable";;;;;;;;                
+US006;"Switching Français/Wolof
+En tant qu'entrepreneur sénégalais
+Je veux basculer facilement entre le français et le wolof
+Afin de comprendre le contenu dans ma langue de préférence";"Priorité : ?? Must Have
+Effort : 8 points
+Sprint : 3
+Thème : Multilangue";"- Toggle langue visible dans l'interface du lecteur
+- Changement de langue instantané sans rechargement
+- Version audio disponible dans les deux langues
+- Transcription disponible dans la langue sélectionnée
+- Préférence langue sauvegardée pour les prochaines sessions
+- Qualité audio équivalente dans les deux langues
+- Terminologie business adaptée culturellement en wolof";;;;;;;;
+US007;"Recherche Avancée d'Opportunités
+En tant qu'entrepreneur cherchant des opportunités spécifiques
+Je veux effectuer des recherches approfondies avec filtres avancés
+Afin de trouver exactement les financements/accompagnements correspondants";"Priorité : ?? Must Have
+Effort : 13 points
+Sprint : 4
+Thème : Deep Research";"- Barre de recherche accessible depuis l'écran principal
+- Recherche par mots-clés avec suggestions auto-complètes
+- Filtres disponibles : Secteur, Type d'opportunité, Montant, Deadline, Zone géographique
+- Résultats triés par pertinence ou date limite
+- Chaque résultat affiche : titre, source, montant, deadline, critères clés
+- Fonction ""Sauvegarder la recherche"" pour relancer facilement
+- Export des résultats en PDF
+- Historique des recherches récentes (10 dernières)
+- Temps de réponse < 2 secondes pour une recherche";;;;;;;;
+US008;"Alertes Personnalisées
+En tant qu'entrepreneur occupé
+Je veux configurer des alertes automatiques pour certains types d'opportunités
+Afin de ne rater aucune chance importante";"Priorité : ?? Should Have
+Effort : 8 points
+Sprint : 6
+Thème : Alertes";"- Option ""Créer une alerte"" depuis les résultats de recherche
+- Configuration des critères d'alerte (secteur, montant min/max, mots-clés)
+- Fréquence d'alerte configurable (Immédiat, Quotidien, Hebdomadaire)
+- Maximum 5 alertes actives par utilisateur
+- Notification push + email pour nouvelles opportunités matchées
+- Gestion des alertes (activer/désactiver/supprimer)
+- Aperçu du nombre d'opportunités matchées par alerte
+- E10Option ""Ne plus me notifier pour cette opportunité""";;;;;;;;
+US009;"Détails Complets d'Opportunité
+En tant qu'entrepreneur intéressé par une opportunité
+Je veux accéder à tous les détails et liens utiles
+Afin de comprendre parfaitement les conditions et comment postuler";"Priorité : ?? Must Have
+Effort : 5 points
+Sprint : 5
+Thème : Détails";"- Page dédiée pour chaque opportunité avec URL unique
+- Informations complètes : description, critères, montant, deadline, processus
+- Liens directs vers le site officiel/formulaire de candidature
+- Section ""Documents requis"" avec checklist
+- Historique des précédents lauréats si disponible
+- Estimation du niveau de concurrence (basée sur données historiques)
+- Bouton ""Marquer comme intéressé"" pour suivi personnel
+- Option partage via WhatsApp/Email/LinkedIn
+- Section commentaires/retours d'expérience communauté";;;;;;;;
+US010;"Gestion du Profil Entrepreneur
+En tant qu'utilisateur de Komkom News
+Je veux mettre à jour mon profil et mes préférences
+Afin d'améliorer la pertinence des contenus proposés";"Priorité : ?? Should Have
+Effort : 5 points
+Sprint : 7
+Thème : Profil";"- Accès à la page profil via menu principal
+- Modification des informations : secteur, stade, intérêts, langue
+- Option d'ajout de mots-clés personnalisés pour affinement
+- Prévisualisation de l'impact des changements sur le contenu
+- Sauvegarde automatique des modifications
+- Historique des journaux reçus avec possibilité de réécouter
+- Statistiques personnelles : temps d'écoute, opportunités explorées
+- Option de suppression de compte avec export des données";;;;;;;;
+US011;"Feedback sur la Pertinence
+En tant qu'utilisateur du journal
+Je veux donner mon feedback sur la pertinence des opportunités proposées
+Afin d'améliorer les futures recommandations";"Priorité : ?? Should Have
+Effort : 3 points
+Sprint : 8
+Thème : Feedback";"- Option de notation (??/??) pour chaque opportunité du journal
+- Feedback optionnel textuel pour justifier la note
+- Question de fin de journal : ""Ce journal vous a-t-il été utile ?Système de feedback non intrusif (pas de popup forcée)
+- Les feedbacks améliorent l'algorithme de personnalisation
+- Option ""Suggérer un type d'opportunité manquant""
+- Remerciement utilisateur après feedback donné";;;;;;;;
+US012;"Navigation Mobile Optimisée
+En tant qu'utilisateur mobile (95% du trafic prévu)
+Je veux une interface parfaitement adaptée au mobile
+Afin de naviguer facilement avec mon smartphone";"Priorité : ?? Must Have
+Effort : 8 points
+Sprint : 3
+Thème : Interface Mobile";"- Design responsive s'adaptant à toutes tailles d'écran (320px-480px)
+- Navigation par tabs en bas : Accueil, Recherche, Profil
+- Temps de chargement < 3 secondes sur 3G
+- Gestures supportés : swipe, pinch-to-zoom, pull-to-refresh
+- Boutons et zones tactiles > 44px (recommandation Apple/Google)
+- Mode portrait et paysage supportés
+- Interface utilisable d'une seule main
+Pas de scroll horizontal nécessaire";;;;;;;;
+US013;"Mode Hors Ligne
+En tant qu'utilisateur avec connexion internet intermittente
+Je veux accéder aux contenus téléchargés même sans connexion
+Afin de continuer à utiliser l'app dans les transports";"Priorité : ?? Should Have
+Effort : 8 points
+Sprint : 9
+Thème : Offline";"- Téléchargement automatique du dernier journal (audio + texte)
+- Option de téléchargement manuel des journaux précédents
+- Indicateur visuel des contenus disponibles hors ligneLecteur audio fonctionnel sans connexion
+- Message informatif quand une fonction nécessite internet
+- Synchronisation automatique au retour de connexion
+- Gestion intelligente du stockage (suppression auto des anciens contenus)";;;;;;;;
+US014;Notifications Push Intelligentes<br/>En tant qu'entrepreneur abonné<br/>Je veux recevoir des notifications pertinentes sans être spammé<br/>Afin de rester informé des nouveautés importantes;"Priorité : ?? Should Have
+Effort : 5 points
+Sprint : 8
+Thème : Notifications";"- Notification hebdomadaire ""Votre nouveau journal est prêt""
+- Notifications d'alertes personnalisées configurées
+- Rappel si journal non écouté après 3 jours
+- Maximum 1 notification par jour (sauf urgence)
+- Personnalisation des types de notifications dans les paramètres
+- Option ""Ne plus déranger"" temporaire (1h, 3h, jusqu'à demain)
+- Notifications riches avec aperçu du contenu
+- Respect des créneaux horaires (8h-20h par défaut)";;;;;;;;
+US015;"Tableau de Bord Personnel
+En tant qu'utilisateur régulier
+Je veux visualiser mes statistiques d'usage et mes opportunités suivies
+Afin de faire le bilan de mon activité";"Priorité : ?? Could Have
+Effort : 8 points
+Sprint : 10
+Thème : Dashboard";"- Affichage du temps total d'écoute mensuel
+Nombre d'opportunités explorées ce mois 
+- Liste des opportunités marquées comme ""Intéressantes""
+- Deadlines approchantes (< 15 jours) en priorité
+- Graphique d'évolution de l'usage sur 6 mois
+- Recommandations basées sur le comportement
+- Export mensuel de l'activité (PDF)";;;;;;;;
+US016;"Communauté d'Entrepreneurs
+En tant qu'entrepreneur utilisateur de Komkom News
+Je veux échanger avec d'autres entrepreneurs sur les opportunités
+Afin de bénéficier de retours d'expérience et créer du networking";"Priorité : ? Won't Have V1
+Effort : 21 points
+Sprint : V2.0
+Thème : Communauté";"- Section commentaires sous chaque opportunité
+- Possibilité de poser des questions à la communauté
+- Système de like/dislike sur les commentaires
+- Profils entrepreneurs avec historique d'activité
+- Modération automatique + signalement communautaire
+- Option messagerie privée entre entrepreneurs
+- Événements networking suggérés basés sur les intérêts";;;;;;;;
+US017;"Analytics Avancées
+En tant qu'équipe Komkom News
+Je veux disposer d'analytics détaillées sur l'usage
+Afin d'optimiser continuellement le produit et le contenu";"Priorité : ? Won't Have V1
+Effort : 13 points
+Sprint : V2.0
+Thème : Analytics";"- Dashboard admin avec métriques clés temps réel
+- Taux d'écoute par segment d'utilisateur
+- Opportunités les plus cliquées/sauvegardées
+- Analyse des patterns d'abandon (où les users stoppent)
+- Feedback aggregé sur la pertinence du contenu
+- Tracking des conversions (de l'écoute à l'action)
+- A/B testing sur différents formats de contenu";;;;;;;;
+;;;;;;;;;;;
