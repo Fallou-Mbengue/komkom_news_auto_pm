@@ -1,0 +1,6 @@
+scrapy>=2.11,<3.0
+PyYAML>=6.0
+SQLAlchemy>=2.0
+psycopg2-binary
+pytest
+python-dotenv
