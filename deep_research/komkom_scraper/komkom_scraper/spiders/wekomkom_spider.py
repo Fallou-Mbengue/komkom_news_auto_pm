@@ -1,12 +1,11 @@
 """
-WekomkomSpider for Komkom Scraper - limited to 3 items
+WekomkomSpider for Komkom Scraper - limited to 3 items, using refined selectors.
 
-Based on: deep_research/spiders/wekomkom_spider.py
 """
 
 import scrapy
 from komkom_scraper.items import OpportunityItem
-from komkom_scraper.utils.parsers import clean_text, parse_date, parse_amount
+from komkom_scraper.utils.parsers import clean_text, parse_date
 from urllib.parse import urlparse, parse_qs
 
 class WekomkomSpider(scrapy.Spider):
@@ -23,108 +22,45 @@ class WekomkomSpider(scrapy.Spider):
         self.max_items = 3
 
     def parse(self, response):
-        # Extract tag parameter from URL
+        # Extract tag parameter from URL for opportunity_type
         parsed_url = urlparse(response.url)
         query_params = parse_qs(parsed_url.query)
-        opportunity_tag = query_params.get('tag', ['accompagnement'])[0]
+        opportunity_type = query_params.get('tag', ['accompagnement'])[0]
 
-        for card in response.css("article.opportunity-card"):
+        # Use the refined grid container selector
+        container = response.css('div.grid.grid-cols-1.sm\\:grid-cols-2.md\\:grid-cols-2.xl\\:grid-cols-3.gap-4')
+        for card in container.css('div'):
             if self.item_count >= self.max_items:
                 return
-            link = card.css("h2 a::attr(href)").get()
-            title = card.css("h2 a::text").get()
-            short_desc = card.css("p.summary::text").get()
-            deadline_raw = card.css("span.deadline::text").get()
-            pub_date_raw = card.css("span.pub-date::text").get()
-            url = response.urljoin(link) if link else None
-
-            meta = {
-                "source_id": url,
-                "title": clean_text(title),
-                "short_desc": clean_text(short_desc),
-                "deadline": parse_date(deadline_raw),
-                "source_url": url,
-                "publication_date": parse_date(pub_date_raw) if pub_date_raw else None,
-            }
-
+            link = card.css('a.opportunity-link::attr(href)').get()
             if link:
-                if self.item_count >= self.max_items:
-                    return
+                # Only pass opportunity_type
                 yield response.follow(
-                    url,
+                    link,
                     callback=self.parse_opportunity,
-                    meta=meta,
-                    cb_kwargs={'opportunity_type': opportunity_tag},
+                    cb_kwargs={'opportunity_type': opportunity_type}
                 )
                 self.item_count += 1
-            else:
                 if self.item_count >= self.max_items:
                     return
-                item = OpportunityItem(
-                    id=None,
-                    source_id=meta["source_id"],
-                    title=meta["title"],
-                    description=meta["short_desc"],
-                    deadline=meta["deadline"],
-                    opportunity_type=opportunity_tag,
-                    sector=None,
-                    stage=None,
-                    amount=None,
-                    source_url=meta["source_url"],
-                    scraped_at=None,
-                    updated_at=None,
-                    eligibility_criteria=None,
-                    publication_date=meta["publication_date"],
-                )
-                yield item
-                self.item_count += 1
 
+        # Pagination logic (if we still need more)
         if self.item_count < self.max_items:
             next_url = response.css("a.next::attr(href)").get()
             if next_url:
                 yield response.follow(response.urljoin(next_url), callback=self.parse)
 
     def parse_opportunity(self, response, opportunity_type):
-        if self.item_count > self.max_items:
-            return
-        meta = response.meta
-        desc_parts = response.css("div.description *::text").getall()
-        if not desc_parts:
-            desc_parts = response.css("section.long-desc *::text").getall()
-        desc = clean_text(" ".join(desc_parts)) if desc_parts else meta.get("short_desc")
-
-        eligibility = None
-        elig_div = response.css("div.eligibility *::text").getall()
-        if elig_div:
-            eligibility = clean_text(" ".join(elig_div))
-        else:
-            for h3 in response.css("h3"):
-                h3_text = h3.css("::text").get()
-                if h3_text and "eligibil" in h3_text.lower():
-                    sibling = h3.xpath("following-sibling::*[1]")
-                    sibling_text = sibling.css("*::text").getall()
-                    eligibility = clean_text(" ".join(sibling_text)) if sibling_text else None
-                    break
-        if not eligibility:
-            eligibility = meta.get("short_desc")
-
-        amount_raw = response.css("span.amount::text, .grant-amount::text").get()
-        amount = parse_amount(amount_raw) if amount_raw else None
-
-        item = OpportunityItem(
-            id=None,
-            source_id=meta["source_id"],
-            title=meta["title"],
-            description=desc,
-            deadline=meta["deadline"],
-            opportunity_type=opportunity_type,
-            sector=None,
-            stage=None,
-            amount=amount,
-            source_url=meta["source_url"],
-            scraped_at=None,
-            updated_at=None,
-            eligibility_criteria=eligibility,
-            publication_date=meta.get("publication_date"),
-        )
+        item = OpportunityItem()
+        item['url'] = response.url
+        item['source'] = 'Wekomkom'
+        item['opportunity_type'] = opportunity_type
+        item['title'] = clean_text(response.css('h1.opportunity-title::text').get())
+        # description = concat of all child text nodes inside div.opportunity-description
+        item['description'] = clean_text(' '.join(response.css('div.opportunity-description *::text').getall()))
+        raw_pub = response.css('span.publication-date::text').get()
+        item['publication_date'] = parse_date(raw_pub) if raw_pub else None
+        raw_deadline = response.css('span.application-deadline::text').get()
+        item['application_deadline'] = parse_date(raw_deadline) if raw_deadline else None
+        item['eligibility_criteria'] = clean_text(response.css('div.eligibility-criteria::text').get())
         yield item
