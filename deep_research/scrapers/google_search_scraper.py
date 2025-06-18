@@ -1,18 +1,14 @@
-import os
-import time
 import random
-from typing import Optional, List
-from urllib.parse import urlparse
+import time
 
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 
-from komkom_scraper.items import OpportunityItem
 from komkom_scraper.pipelines import PostgresUpsertPipeline
 
 SEARCH_QUERIES = ["opportunité entrepreneuriale Sénégal"]
+
 
 def setup_driver() -> webdriver.Chrome:
     chrome_options = Options()
@@ -21,24 +17,23 @@ def setup_driver() -> webdriver.Chrome:
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--ignore-certificate-errors")
-    # Path to Chromium/chromedriver if needed (Debian slim images)
     chrome_options.binary_location = "/usr/bin/chromium"
     driver = webdriver.Chrome(options=chrome_options)
     return driver
 
-def extract_results(driver) -> List[dict]:
+
+def extract_results(driver):
     results = []
     for result in driver.find_elements(By.CSS_SELECTOR, "div.g"):
-        # Title and URL
-        title_elem = result.find_element(By.CSS_SELECTOR, "h3") if len(result.find_elements(By.CSS_SELECTOR, "h3")) else None
+        h3s = result.find_elements(By.CSS_SELECTOR, "h3")
+        title_elem = h3s[0] if h3s else None
         if not title_elem:
             continue
         title = title_elem.text.strip()
-        # Find the ancestor <a> of the h3
-        parent = title_elem.find_element(By.XPATH, "./ancestor::a[1]") if len(title_elem.find_elements(By.XPATH, "./ancestor::a[1]")) else None
+        parent_links = title_elem.find_elements(By.XPATH, "./ancestor::a[1]")
+        parent = parent_links[0] if parent_links else None
         url = parent.get_attribute("href") if parent else None
 
-        # Description snippet
         snippet = None
         snippet_elems = result.find_elements(By.CSS_SELECTOR, "div.IsZzjf span")
         if snippet_elems:
@@ -63,13 +58,13 @@ def extract_results(driver) -> List[dict]:
             results.append(item)
     return results
 
+
 def main():
     pipeline = PostgresUpsertPipeline()
     pipeline.open_spider(None)
     driver = setup_driver()
     try:
         for query in SEARCH_QUERIES:
-            # Google search URL with query
             search_url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
             driver.get(search_url)
             pages_scraped = 0
@@ -78,7 +73,6 @@ def main():
                 time.sleep(random.uniform(1, 2))
                 items = extract_results(driver)
                 for item in items:
-                    # OpportunityItem is a subclass of dict, but for the pipeline we can pass dicts too
                     pipeline.process_item(item, None)
                 pages_scraped += 1
                 try:
@@ -91,6 +85,7 @@ def main():
     finally:
         driver.quit()
         pipeline.close_spider(None)
+
 
 if __name__ == "__main__":
     main()

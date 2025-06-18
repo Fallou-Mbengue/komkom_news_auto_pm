@@ -1,1 +1,1 @@
-# Scrapers package for deep_research.
+"""Scrapers package for deep_research."""
