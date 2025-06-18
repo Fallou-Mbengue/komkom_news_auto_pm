@@ -25,8 +25,5 @@ RUN apt-get update && apt-get install -y \
     chromium-driver \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the new scrapers directory
-COPY ../scrapers/ scrapers/
-
 # Default command if no command is specified when running the container (will be overridden by 'docker run')
 CMD ["scrapy"]
