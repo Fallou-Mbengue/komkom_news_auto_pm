@@ -16,7 +16,14 @@ RUN pip install --no-cache-dir \
     scrapy \
     psycopg2-binary \
     python-dateutil \
-    sqlalchemy # Added explicitly as it's used for DB interaction
+    sqlalchemy \
+    selenium # Added explicitly for Google Search Scraper
+
+# Install Chromium and Chromedriver for headless Selenium
+RUN apt-get update && apt-get install -y \
+    chromium \
+    chromium-driver \
+    && rm -rf /var/lib/apt/lists/*
 
 # Default command if no command is specified when running the container (will be overridden by 'docker run')
 CMD ["scrapy"]

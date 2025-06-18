@@ -24,23 +24,20 @@ echo "Building Scrapy Docker image..."
 # This ensures the build context is correct for COPY commands inside the Dockerfile.
 (cd deep_research/komkom_scraper && docker build -t komkom_scraper_image .)
 
-echo "Running scrapy spider (wekomkom) via Docker..."
-# Run spider with same network & env so it can hit Postgres on host.
-# --rm: Supprime le conteneur après l'exécution.
-# --network host: Permet au conteneur de se connecter à localhost (votre machine hôte) sur le port 5432.
-# -e DB_*: Passe les variables d'environnement de la DB au conteneur.
-# komkom_scraper_image: Le nom de l'image Docker à exécuter.
-# scrapy crawl wekomkom: La commande spécifique à exécuter à l'intérieur du conteneur.
+echo "Running Google Search Scraper via Docker..."
+
 docker run --rm --network host \
   -e DB_HOST="${DB_HOST}" \
   -e DB_PORT="${DB_PORT}" \
   -e DB_USER="${DB_USER}" \
   -e DB_PASSWORD="${DB_PASSWORD}" \
   -e DB_NAME="${DB_NAME}" \
+  -e PYTHONPATH="/app/scraper" \
+  -v "$(pwd)/deep_research/scrapers:/app/scrapers" \
   komkom_scraper_image \
-  scrapy crawl wekomkom
+  python /app/scrapers/google_search_scraper.py
 
-echo "Scrapy spider run completed."
+echo "Google Search Scraper run completed."
 
 # --- PROCHAINES ÉTAPES (à ajouter lorsque les modules Episode Builder, API, Frontend seront implémentés) ---
 # echo "Building episode..."
