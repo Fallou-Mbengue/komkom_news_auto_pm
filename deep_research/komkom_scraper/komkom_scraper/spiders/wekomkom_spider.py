@@ -7,11 +7,15 @@ Based on: deep_research/spiders/wekomkom_spider.py
 import scrapy
 from komkom_scraper.items import OpportunityItem
 from komkom_scraper.utils.parsers import clean_text, parse_date, parse_amount
+from urllib.parse import urlparse, parse_qs
 
 class WekomkomSpider(scrapy.Spider):
     name = "wekomkom"
     allowed_domains = ["wekomkom.com"]
-    start_urls = ["https://wekomkom.com/accompagnement"]
+    start_urls = [
+        "https://wekomkom.com/accompagnement?tag=accompagnement",
+        "https://wekomkom.com/accompagnement?tag=opportunite",
+    ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -19,6 +23,11 @@ class WekomkomSpider(scrapy.Spider):
         self.max_items = 3
 
     def parse(self, response):
+        # Extract tag parameter from URL
+        parsed_url = urlparse(response.url)
+        query_params = parse_qs(parsed_url.query)
+        opportunity_tag = query_params.get('tag', ['accompagnement'])[0]
+
         for card in response.css("article.opportunity-card"):
             if self.item_count >= self.max_items:
                 return
@@ -44,7 +53,8 @@ class WekomkomSpider(scrapy.Spider):
                 yield response.follow(
                     url,
                     callback=self.parse_opportunity,
-                    meta=meta
+                    meta=meta,
+                    cb_kwargs={'opportunity_type': opportunity_tag},
                 )
                 self.item_count += 1
             else:
@@ -56,7 +66,7 @@ class WekomkomSpider(scrapy.Spider):
                     title=meta["title"],
                     description=meta["short_desc"],
                     deadline=meta["deadline"],
-                    opportunity_type="accompagnement",
+                    opportunity_type=opportunity_tag,
                     sector=None,
                     stage=None,
                     amount=None,
@@ -74,7 +84,7 @@ class WekomkomSpider(scrapy.Spider):
             if next_url:
                 yield response.follow(response.urljoin(next_url), callback=self.parse)
 
-    def parse_opportunity(self, response):
+    def parse_opportunity(self, response, opportunity_type):
         if self.item_count > self.max_items:
             return
         meta = response.meta
@@ -107,7 +117,7 @@ class WekomkomSpider(scrapy.Spider):
             title=meta["title"],
             description=desc,
             deadline=meta["deadline"],
-            opportunity_type="accompagnement",
+            opportunity_type=opportunity_type,
             sector=None,
             stage=None,
             amount=amount,
