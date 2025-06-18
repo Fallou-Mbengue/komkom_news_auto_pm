@@ -1,0 +1,1 @@
+from deep_research.pipelines import PostgresUpsertPipeline as PostgresUpsertPipeline
