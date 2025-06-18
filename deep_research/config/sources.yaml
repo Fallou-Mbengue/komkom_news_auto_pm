@@ -1,0 +1,21 @@
+- id: "anpe"
+  name: "ANPE Financement PME"
+  start_urls:
+    - "https://www.exemple-anpe.sn/financement"
+  list_selector: "div.card-opportunity"
+  title_selector: "h3::text"
+  description_selector: "div.body::text"
+  link_selector: "a::attr(href)"
+  date_selector: "div.date::text"
+  type: "financement"
+
+- id: "incubateur_xy"
+  name: "Incubateur XY Appels à projets"
+  start_urls:
+    - "https://incubateur-xy.org/appels-a-projets"
+  list_selector: "li.article"
+  title_selector: "h2.title::text"
+  description_selector: "p.summary::text"
+  link_selector: "h2.title a::attr(href)"
+  date_selector: "span.deadline::text"
+  type: "accompagnement"
