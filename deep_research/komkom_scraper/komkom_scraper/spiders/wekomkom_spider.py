@@ -6,7 +6,7 @@ Based on: deep_research/spiders/wekomkom_spider.py
 
 import scrapy
 from komkom_scraper.items import OpportunityItem
-from deep_research.utils.parsers import clean_text, parse_date, parse_amount
+from komkom_scraper.utils.parsers import clean_text, parse_date, parse_amount
 
 class WekomkomSpider(scrapy.Spider):
     name = "wekomkom"
