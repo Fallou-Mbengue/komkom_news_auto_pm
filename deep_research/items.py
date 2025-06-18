@@ -14,3 +14,6 @@ class OpportunityItem(scrapy.Item):
     source_url = scrapy.Field()
     scraped_at = scrapy.Field()
     updated_at = scrapy.Field()
+    # New fields for eligibility and publication date
+    eligibility_criteria = scrapy.Field()
+    publication_date = scrapy.Field()

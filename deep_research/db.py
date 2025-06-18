@@ -33,6 +33,9 @@ class Opportunity(Base):
     source_url = Column(Text, unique=True, nullable=False)
     scraped_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)
+    # New fields for eligibility and publication date
+    eligibility_criteria = Column(Text, nullable=True)
+    publication_date = Column(Date, nullable=True)
 
     __table_args__ = (
         UniqueConstraint('source_url', name='_source_url_uc'),
@@ -71,7 +74,8 @@ def upsert_opportunity(session, item):
         changed = False
         fields_to_update = [
             'title', 'description', 'deadline', 'opportunity_type',
-            'sector', 'stage', 'amount'
+            'sector', 'stage', 'amount',
+            'eligibility_criteria', 'publication_date'  # new fields
         ]
         for field in fields_to_update:
             if getattr(existing, field) != item.get(field):
@@ -95,6 +99,8 @@ def upsert_opportunity(session, item):
             source_url=item['source_url'],
             scraped_at=item.get('scraped_at', now),
             updated_at=now,
+            eligibility_criteria=item.get('eligibility_criteria'),
+            publication_date=item.get('publication_date'),
         )
         session.add(opp)
         session.commit()
