@@ -117,17 +117,17 @@ def extract_results(driver):
                     "source_id": f"Google Search_{uuid.uuid4().hex}",
                     "title": title,
                     "description": description,
-                    "source_url": source_url,
-                    "source": "Google Search",
+                    "deadline": None,
                     "opportunity_type": "Opportunité Entrepreneuriale",
-                    "eligibility_criteria": None,
-                    "application_deadline": None,
-                    "publication_date": None,
                     "sector": None,
                     "stage": None,
                     "amount": None,
+                    "source_url": source_url,
                     "scraped_at": now,
-                    "updated_at": now
+                    "updated_at": now,
+                    "eligibility_criteria": None,
+                    "publication_date": None,
+                    "source": "Google Search"
                 }
                 results.append(item)
                 print(f"DEBUG: Successfully processed item ({idx}): Title='{item['title']}' URL='{item['source_url']}'")
