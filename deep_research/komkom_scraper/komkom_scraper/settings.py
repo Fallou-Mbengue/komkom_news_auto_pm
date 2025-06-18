@@ -8,11 +8,11 @@ DOWNLOAD_DELAY = 1
 AUTOTHROTTLE_ENABLED = True
 
 ITEM_PIPELINES = {
-    "deep_research.pipelines.PostgresUpsertPipeline": 300,
+    "komkom_scraper.pipelines.PostgresUpsertPipeline": 300,
 }
 
 DOWNLOADER_MIDDLEWARES = {
-    "deep_research.spiders.user_agent_rotation.UserAgentRotationMiddleware": 400,
+    "komkom_scraper.spiders.user_agent_rotation.UserAgentRotationMiddleware": 400,
 }
 
 ROBOTSTXT_OBEY = False
