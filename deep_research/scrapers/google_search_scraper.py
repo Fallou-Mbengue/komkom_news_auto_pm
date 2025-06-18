@@ -9,6 +9,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
+
 import sys
 sys.path.append('/app/scraper')  # Ensures komkom_scraper package is resolvable when script is executed via mounted volume.
 
@@ -33,42 +37,87 @@ def setup_driver() -> webdriver.Chrome:
 
 def extract_results(driver):
     results = []
-    search_results = driver.find_elements(By.CSS_SELECTOR, 'div.g')
+    # Use explicit wait for Google results container.
+    try:
+        # Google often uses 'div.g' as the primary result container, but this selector may change at any time.
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'div.g'))
+        )
+    except TimeoutException:
+        print("WARNING: Timeout waiting for Google results container. Dumping page source.")
+        try:
+            with open("google_page_source_debug.html", "w", encoding="utf-8") as f:
+                f.write(driver.page_source)
+        except Exception as e:
+            print(f"ERROR: Failed to write page source debug file: {e}")
+        try:
+            driver.save_screenshot("google_screenshot_debug.png")
+        except Exception as e:
+            print(f"ERROR: Could not save screenshot: {e}")
+        return []
+
+    search_results = driver.find_elements(By.CSS_SELECTOR, 'div.g')  # Google may change this selector.
     print(f"DEBUG: Found {len(search_results)} potential search results on this page.")
 
-    for result in search_results:
+    if len(search_results) == 0:
+        print("WARNING: Found 0 potential search results. Dumping page source for debugging.")
+        try:
+            with open("google_page_source_debug.html", "w", encoding="utf-8") as f:
+                f.write(driver.page_source)
+        except Exception as e:
+            print(f"ERROR: Failed to write page source debug file: {e}")
+        try:
+            driver.save_screenshot("google_screenshot_debug.png")
+        except Exception as e:
+            print(f"ERROR: Could not save screenshot: {e}")
+
+    for idx, result in enumerate(search_results):
         try:
             # Extract title
-            title_elements = result.find_elements(By.CSS_SELECTOR, 'h3')
-            title_elem = title_elements[0] if title_elements else None
-            title = clean_text(title_elem.text) if title_elem else None
+            try:
+                title_elem = result.find_element(By.CSS_SELECTOR, 'h3')
+                title = clean_text(title_elem.text)
+            except Exception as e:
+                print(f"DEBUG: [{idx}] No title found in result block: {e}")
+                title_elem = None
+                title = None
 
             # Extract URL
-            url = None
-            parent_links = title_elem.find_elements(By.XPATH, "./ancestor::a[1]") if title_elem else []
-            if parent_links:
-                url = parent_links[0].get_attribute("href")
+            source_url = None
+            try:
+                if title_elem:
+                    parent_links = title_elem.find_elements(By.XPATH, "./ancestor::a[1]")
+                    if parent_links:
+                        source_url = parent_links[0].get_attribute("href")
+            except Exception as e:
+                print(f"DEBUG: [{idx}] Failed to extract parent link for URL: {e}")
 
             # Extract description/snippet
             description = None
+            # Try multiple selectors in order, each with its own try/except:
             try:
                 snippet_elem = result.find_element(By.CSS_SELECTOR, 'div.IsZzjf span')
                 description = clean_text(snippet_elem.text)
-            except:
+            except Exception:
                 try:
                     snippet_elem = result.find_element(By.CSS_SELECTOR, 'div.VwiC3b span')
                     description = clean_text(snippet_elem.text)
-                except:
-                    pass
+                except Exception:
+                    try:
+                        snippet_elem = result.find_element(By.CSS_SELECTOR, 'span.aCOpRe')
+                        description = clean_text(snippet_elem.text)
+                    except Exception:
+                        pass  # No description found
 
-            if title and url and "google.com/search?" not in url:
+            # Double-check for Google internal links and missing data
+            if title and source_url and "google.com/search?" not in source_url:
                 now = datetime.now(timezone.utc)
                 item = {
                     "id": str(uuid.uuid4()),
                     "source_id": f"Google Search_{uuid.uuid4().hex}",
                     "title": title,
                     "description": description,
-                    "source_url": url,
+                    "source_url": source_url,
                     "source": "Google Search",
                     "opportunity_type": "Opportunité Entrepreneuriale",
                     "eligibility_criteria": None,
@@ -81,12 +130,13 @@ def extract_results(driver):
                     "updated_at": now
                 }
                 results.append(item)
-                print(f"DEBUG: Successfully processed item: Title='{item['title']}' URL='{item['source_url']}'")
+                print(f"DEBUG: Successfully processed item ({idx}): Title='{item['title']}' URL='{item['source_url']}'")
             else:
-                print(f"DEBUG: Skipping result (no title/URL or internal Google link): {title} - {url}")
+                print(f"DEBUG: Skipping result ({idx}) (no title/URL or internal Google link): {title} - {source_url}")
         except Exception as e:
-            print(f"ERROR: Failed to extract data from a search result block: {e}")
-            # print(result.get_attribute('outerHTML')) # Uncomment for more debugging if needed
+            print(f"ERROR: Failed to extract data from a search result block [{idx}]: {e}")
+            # For deep debug, uncomment to dump block HTML:
+            # try: print(result.get_attribute('outerHTML')) except: pass
     return results
 
 def main():
@@ -102,7 +152,27 @@ def main():
             pages_scraped = 0
 
             while pages_scraped < 3:
-                time.sleep(random.uniform(2, 4))
+                # Explicit wait after page load and before scraping
+                try:
+                    WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, 'div.g'))
+                    )
+                except TimeoutException:
+                    print("WARNING: Timeout waiting for Google results container (pagination). Dumping page source.")
+                    try:
+                        with open("google_page_source_debug.html", "w", encoding="utf-8") as f:
+                            f.write(driver.page_source)
+                    except Exception as e:
+                        print(f"ERROR: Failed to write page source debug file: {e}")
+                    try:
+                        driver.save_screenshot("google_screenshot_debug.png")
+                    except Exception as e:
+                        print(f"ERROR: Could not save screenshot: {e}")
+                    break
+
+                # Add a very small randomized sleep to avoid appearing too robotic.
+                time.sleep(random.uniform(0.5, 1.0))
+
                 # CAPTCHA/Blocker check
                 if "captcha" in driver.current_url or "Sorry..." in driver.page_source:
                     print("WARNING: Google CAPTCHA or blocking page detected. Stopping.")
@@ -122,6 +192,24 @@ def main():
                         break
                     print("DEBUG: Clicking 'Next' button to go to next results page.")
                     next_btns[0].click()
+                    # Wait for results container to appear again after pagination
+                    try:
+                        WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, 'div.g'))
+                        )
+                    except TimeoutException:
+                        print("WARNING: Timeout after clicking 'Next'. Dumping page source.")
+                        try:
+                            with open("google_page_source_debug.html", "w", encoding="utf-8") as f:
+                                f.write(driver.page_source)
+                        except Exception as e:
+                            print(f"ERROR: Failed to write page source debug file: {e}")
+                        try:
+                            driver.save_screenshot("google_screenshot_debug.png")
+                        except Exception as e:
+                            print(f"ERROR: Could not save screenshot: {e}")
+                        break
+                    time.sleep(random.uniform(0.5, 1.0))
                 except Exception as e:
                     print(f"ERROR: Failed to click 'Next' button: {e}")
                     break
